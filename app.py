@@ -9,9 +9,14 @@ import time
 import re
 import http.client
 from bs4 import BeautifulSoup
+import tweepy
 # Global setup definition
 bm_list = ['yukinoba', 'frojet'];
 login = {'account': 'yukinoba', 'password': 'ckmagic007'};
+twitter_consumer_key = 'rn9drYLjeSxrnUjq22J9Bmaq0';
+twitter_consumer_secret = 'wMy9iId8y9BkVz0vm0R0a2Zx3lNupRDYKJ1ijYQtZzNDgwAUHP';
+twitter_access_token = '280778178-ZMLPmD81pcn83lrCGI9PLCRDKw2uKoOgF8guV2uO';
+twitter_access_token_secret = 'BVoPitNWsmfAEXySLVyexRLBMXGFxdcGohFqtqjSnL6YL';
 # Function definition
 # Utility: convert PTT web filename to AIDu
 def fn2aidu( type, v1, v2 ):
@@ -44,10 +49,23 @@ def aidu2aidc( aidu ):
             aidu_tmp = aidu_tmp // len(aidc_map);
     aidc = ''.join(aidc_cell);
     return aidc;
+# Utility: handle Tweepy twitter API limits
+def limit_handled( cursor ):
+    while True:
+        try:
+            yield cursor.next();
+        except tweepy.RateLimitError:
+            time.sleep(60 * 15);
 # Main procedure
 # Work until shutdown
 while True:
     # # TODO: crawler for Twitter
+    auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret);
+    auth.set_access_token(twitter_access_token, twitter_access_token_secret);
+    api = tweepy.API(auth);
+    # Get certain twitter users last 10 status
+    for status in limit_handled(tweepy.Cursor(api.user_timeline(), id='OPcom_info').items(), count=10):
+        print(status.text);
     # conn = http.client.HTTPSConnection("www.ptt.cc");
     # conn.request("GET", "/bbs/ONE_PIECE/index.html");
     # response_list = conn.getresponse();
@@ -58,4 +76,4 @@ while True:
     # conn.close();
     # # Rest a moment
     # #--2017.10.05 extends to 3mins a round
-    # time.sleep(60 * 3);
+    time.sleep(60 * 15);
