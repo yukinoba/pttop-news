@@ -62,7 +62,7 @@ def limit_handled( cursor ):
     while True:
         try:
             yield cursor.next();
-        except tweepy.RateLimitError:
+        except tweepy.TweepError:
             time.sleep(60 * 15);
 # Main procedure
 # Work until shutdown
@@ -70,7 +70,7 @@ while True:
     # # TODO: crawler for Twitter
     auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret);
     auth.set_access_token(twitter_access_token, twitter_access_token_secret);
-    api = tweepy.API(auth);
+    api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True);
     # Get certain twitter users last 10 status
     today = datetime.datetime.combine(datetime.date.today(), datetime.time.min);
     for userid in twitter_userids:
