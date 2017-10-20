@@ -64,7 +64,7 @@ while True:
     auth.set_access_token(twitter_access_token, twitter_access_token_secret);
     api = tweepy.API(auth);
     # Get certain twitter users last 10 status
-    for status in limit_handled(tweepy.Cursor(api.user_timeline(), id='OPcom_info', count=10).items()):
+    for status in limit_handled(tweepy.Cursor(api.user_timeline, id="OPcom_info", count=10).items()):
         print(status.text);
     # conn = http.client.HTTPSConnection("www.ptt.cc");
     # conn.request("GET", "/bbs/ONE_PIECE/index.html");
