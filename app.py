@@ -74,8 +74,11 @@ while True:
     # Get certain twitter users last 10 status
     today = datetime.datetime.combine(datetime.date.today(), datetime.time.min);
     for userid in twitter_userids:
-        for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, since_id=last_tweetids[userid], page=1, count=10).items()):
-            if status.created_at > today:
+        print(">>> userid=" + userid);
+        print(">>> lastid=" + last_tweetids[userid]);
+        latest_tweetid = last_tweetids[userid];
+        for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1, count=10).items()):
+            if status.created_at > today and status.id > latest_tweetid:
                 print(status.id);
                 print(status.created_at);
                 print(status.text);
