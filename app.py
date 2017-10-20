@@ -13,10 +13,18 @@ import tweepy
 # Global setup definition
 bm_list = ['yukinoba', 'frojet'];
 login = {'account': 'yukinoba', 'password': 'ckmagic007'};
+# Twitter application consumer keys
+# https://apps.twitter.com/
 twitter_consumer_key = 'rn9drYLjeSxrnUjq22J9Bmaq0';
 twitter_consumer_secret = 'wMy9iId8y9BkVz0vm0R0a2Zx3lNupRDYKJ1ijYQtZzNDgwAUHP';
 twitter_access_token = '280778178-ZMLPmD81pcn83lrCGI9PLCRDKw2uKoOgF8guV2uO';
 twitter_access_token_secret = 'BVoPitNWsmfAEXySLVyexRLBMXGFxdcGohFqtqjSnL6YL';
+# ONE_PIECE twitters
+twitter_userids = ['OPcom_info', 'Eiichiro_Staff', 'mugistore_info', 'ONEPIECE_trecru', 'opgame_official'];
+# ONE_PIECE last tweets record
+last_tweetids = {};
+for twitter_userid in twitter_userids:
+    last_tweetids[twitter_userid] = 0;
 # Function definition
 # Utility: convert PTT web filename to AIDu
 def fn2aidu( type, v1, v2 ):
@@ -65,12 +73,19 @@ while True:
     api = tweepy.API(auth);
     # Get certain twitter users last 10 status
     today = datetime.datetime.combine(datetime.date.today(), datetime.time.min);
-    for status in limit_handled(tweepy.Cursor(api.user_timeline, id="OPcom_info", page=1, count=10).items()):
-        if status.created_at > today:
-            print(status.id);
-            print(status.created_at);
-            print(status.text);
-    print("-----------------------------------------");
+    for userid in twitter_userids:
+        for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, since_id=last_tweetids[userid], page=1, count=10).items()):
+            if status.created_at > today:
+                print(status.id);
+                print(status.created_at);
+                print(status.text);
+                if 'media' in status.extended_entities:
+                    for media in status.extended_entities['media']:
+                        if media['type'] == 'photo':
+                            print(media['media_url']);
+                if status.id > last_tweetids[userid]:
+                    last_tweetids[userid] = status.id;
+        print("-----------------------------------------");
     # conn = http.client.HTTPSConnection("www.ptt.cc");
     # conn.request("GET", "/bbs/ONE_PIECE/index.html");
     # response_list = conn.getresponse();
