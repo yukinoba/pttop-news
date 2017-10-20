@@ -82,10 +82,13 @@ while True:
                 print(status.id);
                 print(status.created_at);
                 print(status.text);
-                if 'media' in status.extended_entities:
-                    for media in status.extended_entities['media']:
-                        if media['type'] == 'photo':
-                            print(media['media_url']);
+                try :
+                    if 'media' in status.extended_entities:
+                        for media in status.extended_entities['media']:
+                            if media['type'] == 'photo':
+                                print(media['media_url']);
+                except AttributeError:
+                    pass
                 if status.id > last_tweetids[userid]:
                     last_tweetids[userid] = status.id;
         print("-----------------------------------------");
