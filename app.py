@@ -20,7 +20,7 @@ twitter_consumer_secret = 'wMy9iId8y9BkVz0vm0R0a2Zx3lNupRDYKJ1ijYQtZzNDgwAUHP';
 twitter_access_token = '280778178-ZMLPmD81pcn83lrCGI9PLCRDKw2uKoOgF8guV2uO';
 twitter_access_token_secret = 'BVoPitNWsmfAEXySLVyexRLBMXGFxdcGohFqtqjSnL6YL';
 # ONE_PIECE twitters
-twitter_userids = ['OPcom_info', 'Eiichiro_Staff', 'mugistore_info', 'ONEPIECE_trecru', 'opgame_official'];
+twitter_userids = ['OPcom_info', 'Eiichiro_Staff', 'mugistore_info', 'ONEPIECE_trecru', 'opgame_official', '1kuji_onepiece', 'onepiecetower'];
 # ONE_PIECE last tweets record
 last_tweetids = {};
 for twitter_userid in twitter_userids:
@@ -77,7 +77,7 @@ while True:
         print(">>> userid=" + str(userid));
         print(">>> lastid=" + str(last_tweetids[userid]));
         latest_tweetid = last_tweetids[userid];
-        for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1, count=10).items()):
+        for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1).items(10)):
             if status.created_at > today and status.id > latest_tweetid:
                 print(status.id);
                 print(status.created_at);
