@@ -67,36 +67,39 @@ def limit_handled( cursor ):
 # Main procedure
 # Work until shutdown
 while True:
-    # # TODO: crawler for Twitter
+    tweets = [];
+    # Crawler for Twitter
     auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret);
     auth.set_access_token(twitter_access_token, twitter_access_token_secret);
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True);
     # Get certain twitter users last 10 status
     today = datetime.datetime.combine(datetime.date.today(), datetime.time.min);
     for userid in twitter_userids:
-        print(">>> userid=" + str(userid));
-        print(">>> lastid=" + str(last_tweetids[userid]));
         latest_tweetid = last_tweetids[userid];
         for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1, tweet_mode='extended').items(10)):
             if status.created_at > today and status.id > latest_tweetid:
-                print(status.id);
-                print(status.created_at);
-                # print(status.text);
-                print(status.full_text);
-                print(">>> retweeted=" + str(status.retweeted));
-                if hasattr(status, 'retweeted_status'):
-                    print(">>> retweeted_status=True");
-                if status.full_text.startswith("RT"):
-                    print(">>> RT=True");
-                try :
-                    if 'media' in status.extended_entities:
-                        for media in status.extended_entities['media']:
-                            if media['type'] == 'photo':
-                                print(media['media_url']);
-                except AttributeError:
+                if hasattr(status, 'retweeted_status') or status.full_text.startswith("RT"):
                     pass
-                if status.id > last_tweetids[userid]:
-                    last_tweetids[userid] = status.id;
+                else:
+                    tweet = {};
+                    tweet['time'] = status.created_at + timedelta(hours=8);
+                    tweet['content'] = status.full_text;
+                    tweet['imgurls'] = [];
+                    try :
+                        if 'media' in status.extended_entities:
+                            for media in status.extended_entities['media']:
+                                if media['type'] == 'photo':
+                                    tweet['imgurls'].append(media['media_url']);
+                    except AttributeError:
+                        pass
+                    if status.id > last_tweetids[userid]:
+                        last_tweetids[userid] = status.id;
+                    tweets.append(tweet);
+    for tweet in tweets:
+        print(str(tweet['time']));
+        print(str(tweet['content']));
+        for imgurl in tweet['imgurls']:
+            print(str(imgurl));
         print("-----------------------------------------");
     # conn = http.client.HTTPSConnection("www.ptt.cc");
     # conn.request("GET", "/bbs/ONE_PIECE/index.html");
