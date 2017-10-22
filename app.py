@@ -5,6 +5,7 @@ import telnetlib
 import uao_decode
 import sys
 import datetime
+from datetime import timedelta
 import time
 import re
 import http.client
