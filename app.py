@@ -74,7 +74,8 @@ while True:
     auth.set_access_token(twitter_access_token, twitter_access_token_secret);
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True);
     # Get certain twitter users last 10 status
-    today = datetime.datetime.combine(datetime.date.today(), datetime.time.min);
+    nowdatetime = datetime.datetime.utcnow() + datetime.timedelta(hours=8);
+    today = datetime.datetime.combine(nowdatetime.date(), datetime.time.min);
     for userid in twitter_userids:
         latest_tweetid = last_tweetids[userid];
         for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1, tweet_mode='extended').items(10)):
@@ -83,7 +84,7 @@ while True:
                     pass
                 else:
                     tweet = {};
-                    tweet['time'] = status.created_at + timedelta(hours=8);
+                    tweet['time'] = status.created_at + datetime.timedelta(hours=8);
                     tweet['content'] = status.full_text;
                     tweet['imgurls'] = [];
                     try :
