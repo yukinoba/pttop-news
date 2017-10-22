@@ -77,11 +77,17 @@ while True:
         print(">>> userid=" + str(userid));
         print(">>> lastid=" + str(last_tweetids[userid]));
         latest_tweetid = last_tweetids[userid];
-        for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1).items(10)):
+        for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1, tweet_mode='extended').items(10)):
             if status.created_at > today and status.id > latest_tweetid:
                 print(status.id);
                 print(status.created_at);
                 print(status.text);
+                print(status.full_text);
+                print(">>> retweeted=" + str(status.retweeted));
+                if hasattr(status, 'retweeted_status'):
+                    print(">>> retweeted_status=True");
+                if status.text.startswith("RT"):
+                    print(">>> RT=True");
                 try :
                     if 'media' in status.extended_entities:
                         for media in status.extended_entities['media']:
