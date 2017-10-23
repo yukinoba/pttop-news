@@ -88,7 +88,7 @@ while True:
                     tweet = {};
                     tweet['time'] = status.created_at + datetime.timedelta(hours=8);
                     # Get original tweet links
-                    olink_index = status.full_text.rfind("http://");
+                    olink_index = status.full_text.rfind("https://");
                     if olink_index > 0:
                         tweet['link'] = status.full_text[olink_index:];
                         tweet['content'] = status.full_text[:olink_index];
