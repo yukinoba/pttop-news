@@ -73,20 +73,28 @@ while True:
     auth = tweepy.OAuthHandler(twitter_consumer_key, twitter_consumer_secret);
     auth.set_access_token(twitter_access_token, twitter_access_token_secret);
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True);
-    # Get certain twitter users last 10 status
-    # nowdatetime = datetime.datetime.utcnow() + datetime.timedelta(hours=8);
-    # today = datetime.datetime.combine(nowdatetime.date(), datetime.time.min);
+    # Get today news only
+    nowdatetime = datetime.datetime.utcnow() + datetime.timedelta(hours=8);
+    today = datetime.datetime.combine(nowdatetime.date(), datetime.time.min);
     for userid in twitter_userids:
         latest_tweetid = last_tweetids[userid];
+        # Get certain twitter users last 10 status
         for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1, tweet_mode='extended').items(10)):
-            # if status.created_at > today and status.id > latest_tweetid:
+            # Get today news only and keep tracking only the latest news
+            if status.created_at + datetime.timedelta(hours=8) > today and status.id > latest_tweetid:
                 if hasattr(status, 'retweeted_status') or status.full_text.startswith("RT"):
                     pass
                 else:
                     tweet = {};
-                    # tweet['time'] = status.created_at + datetime.timedelta(hours=8);
-                    tweet['time'] = status.created_at;
-                    tweet['content'] = status.full_text;
+                    tweet['time'] = status.created_at + datetime.timedelta(hours=8);
+                    # Get original tweet links
+                    olink_index = status.full_text.rfind("http://");
+                    if olink_index > 0:
+                        tweet['link'] = status.full_text[olink_index:];
+                        tweet['content'] = status.full_text[:olink_index];
+                    else:
+                        tweet['link'] = "";
+                        tweet['content'] = status.full_text;
                     tweet['imgurls'] = [];
                     try :
                         if 'media' in status.extended_entities:
@@ -99,9 +107,8 @@ while True:
                         last_tweetids[userid] = status.id;
                     tweets.append(tweet);
     for tweet in tweets:
-        print(str(datetime.datetime.utcnow()));
-        print(str(datetime.date.today()));
         print(str(tweet['time']));
+        print(str(tweet['link']));
         print(str(tweet['content']));
         for imgurl in tweet['imgurls']:
             print(str(imgurl));
