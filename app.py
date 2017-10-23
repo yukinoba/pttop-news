@@ -74,17 +74,18 @@ while True:
     auth.set_access_token(twitter_access_token, twitter_access_token_secret);
     api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True);
     # Get certain twitter users last 10 status
-    nowdatetime = datetime.datetime.utcnow() + datetime.timedelta(hours=8);
-    today = datetime.datetime.combine(nowdatetime.date(), datetime.time.min);
+    # nowdatetime = datetime.datetime.utcnow() + datetime.timedelta(hours=8);
+    # today = datetime.datetime.combine(nowdatetime.date(), datetime.time.min);
     for userid in twitter_userids:
         latest_tweetid = last_tweetids[userid];
         for status in limit_handled(tweepy.Cursor(api.user_timeline, id=userid, page=1, tweet_mode='extended').items(10)):
-            if status.created_at > today and status.id > latest_tweetid:
+            # if status.created_at > today and status.id > latest_tweetid:
                 if hasattr(status, 'retweeted_status') or status.full_text.startswith("RT"):
                     pass
                 else:
                     tweet = {};
-                    tweet['time'] = status.created_at + datetime.timedelta(hours=8);
+                    # tweet['time'] = status.created_at + datetime.timedelta(hours=8);
+                    tweet['time'] = status.created_at;
                     tweet['content'] = status.full_text;
                     tweet['imgurls'] = [];
                     try :
@@ -98,6 +99,8 @@ while True:
                         last_tweetids[userid] = status.id;
                     tweets.append(tweet);
     for tweet in tweets:
+        print(str(datetime.datetime.utcnow()));
+        print(str(datetime.date.today()));
         print(str(tweet['time']));
         print(str(tweet['content']));
         for imgurl in tweet['imgurls']:
