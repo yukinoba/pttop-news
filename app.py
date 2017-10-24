@@ -11,6 +11,7 @@ import re
 import http.client
 from bs4 import BeautifulSoup
 import tweepy
+import unicodedata
 # Global setup definition
 bm_list = ['yukinoba', 'frojet'];
 login = {'account': 'opnews', 'password': 'wannpisu'};
@@ -22,6 +23,15 @@ twitter_access_token = '280778178-ZMLPmD81pcn83lrCGI9PLCRDKw2uKoOgF8guV2uO';
 twitter_access_token_secret = 'BVoPitNWsmfAEXySLVyexRLBMXGFxdcGohFqtqjSnL6YL';
 # ONE_PIECE twitters
 twitter_userids = ['OPcom_info', 'Eiichiro_Staff', 'mugistore_info', 'ONEPIECE_trecru', 'opgame_official', '1kuji_onepiece', 'onepiecetower'];
+twitter_usernames = {
+    'OPcom_info': 'ONE PIECE 綜合官方誌',
+    'Eiichiro_Staff': 'ONE PIECE 編輯部',
+    'mugistore_info': '草帽商店',
+    'ONEPIECE_trecru': '航海王：秘寶尋航',
+    'opgame_official': 'ONE PIECE 家用主機遊戲',
+    '1kuji_onepiece': '航海王一番賞',
+    'onepiecetower': '東京鐵塔航海王主題樂園'
+};
 # ONE_PIECE last tweets record
 last_tweetids = {};
 for twitter_userid in twitter_userids:
@@ -152,10 +162,12 @@ def news_update( newslink, tweets ):
                             content_term = tn.read_very_eager().decode('uao_decode');
                             # Edit the existed post
                             if "文章選讀" in content_term:
+                                print(">>> 編輯文章");
                                 tn.write("E".encode('uao_decode'));
                                 time.sleep(3);
                                 content_term = tn.read_very_eager().decode('uao_decode');
                     else:
+                        print(">>> 發表文章");
                         tn.write(b"\x10");
                         time.sleep(3);
                         content_term = tn.read_very_eager().decode('uao_decode');
@@ -163,11 +175,13 @@ def news_update( newslink, tweets ):
                         if "發表文章" in content_term:
                             # Customize post category
                             if "種類" in content_term:
+                                print(">>> 自訂分類");
                                 tn.write(b"\r");
                                 time.sleep(3);
                                 content_term = tn.read_very_eager().decode('uao_decode');
                                 # News post title
                                 if "標題" in content_term:
+                                    print(">>> 輸入標題");
                                     nowdatetime = datetime.datetime.utcnow() + datetime.timedelta(hours=8);
                                     today = datetime.datetime.combine(nowdatetime.date(), datetime.time.min);
                                     tn.write(("[情報] " + today.strftime('%m/%d') + " 最新情報匯整").encode('uao_decode') + b"\r");
@@ -175,7 +189,7 @@ def news_update( newslink, tweets ):
                                     content_term = tn.read_very_eager().decode('uao_decode');
                     # Edit the post
                     if "編輯文章" in content_term:
-                        # Go to the end of post
+                        print(">>> 編輯文章");
                         tn.write(b"\x13");
                         time.sleep(3);
                         content_term = tn.read_very_eager().decode('uao_decode');
@@ -200,7 +214,71 @@ def news_update( newslink, tweets ):
                         time.sleep(3);
                         content_term = tn.read_very_eager().decode('uao_decode');
                         for tweet in tweets:
-                            pass
+                            print(">>> 更新情報");
+                            print(str(tweet['time']) + str(tweet['link']));
+                            print(str(tweet['content']));
+                            for imgurl in tweet['imgurls']:
+                                print(str(imgurl));
+                            tn.write(("※ " + tweet['name'] + " " + tweet['time']).encode('uao_decode') + b"\r");
+                            time.sleep(3);
+                            content_term = tn.read_very_eager().decode('uao_decode');
+                            tn.write(("原文網址：" + tweet['link']).encode('uao_decode') + b"\r");
+                            time.sleep(3);
+                            content_term = tn.read_very_eager().decode('uao_decode');
+                            # Ideal width of single post line is 50 half-width chars
+                            line_limit = 50;
+                            counter = 0;
+                            for char in tweet['content']:
+                                tn.write(char.encode('uao_decode'));
+                                time.sleep(3);
+                                content_term = tn.read_very_eager().decode('uao_decode');
+                                charwidth = unicodedata.east_asian_width(char);
+                                if charwidth in ['F', 'W']:
+                                    counter = counter + 2;
+                                elif charwidth in ['A', 'H', 'N', 'Na']:
+                                    counter = counter + 1;
+                                else:
+                                    counter = counter + 1;
+                                if counter > line_limit:
+                                    counter = 0;
+                                    tn.write(b"\r");
+                                    time.sleep(3);
+                                    content_term = tn.read_very_eager().decode('uao_decode');
+                            if counter > 0:
+                                tn.write(b"\r");
+                                time.sleep(3);
+                                content_term = tn.read_very_eager().decode('uao_decode');
+                            # Images in tweet
+                            for imgurl in tweet['imgurls']:
+                                tn.write(imgurl.encode('uao_decode') + b"\r");
+                                time.sleep(3);
+                                content_term = tn.read_very_eager().decode('uao_decode');
+                            # End of a tweet
+                            tn.write(b"\r");
+                            time.sleep(3);
+                            content_term = tn.read_very_eager().decode('uao_decode');
+                        # End of for-loop
+                        tn.write(b"\x18");
+                        time.sleep(3);
+                        content_term = tn.read_very_eager().decode('uao_decode');
+                        # Save edited post
+                        if "檔案處理" in content_term:
+                            print(">>> 儲存編輯");
+                            tn.write("s".encode('uao_decode') + b"\r");
+                            time.sleep(3);
+                            content_term = tn.read_very_eager().decode('uao_decode');
+                            # Signature
+                            if "簽名檔" in content_term:
+                                print(">>> 加簽名檔");
+                                tn.write("1".encode('uao_decode') + b"\r");
+                                time.sleep(3);
+                                content_term = tn.read_very_eager().decode('uao_decode');
+                                # Done
+                                if "請按任意鍵繼續" in content_term:
+                                    print(">>> 完成編輯");
+                                    tn.write(b"\r");
+                                    time.sleep(3);
+                                    content_term = tn.read_very_eager().decode('uao_decode');
     # Logout process
     while not "主功能表" in content_term:
         print(">>> 回上一層");
@@ -250,7 +328,9 @@ while True:
                     # Ignore retweeted posts
                     pass
                 else:
+                    print(">>> 有新情報");
                     tweet = {};
+                    tweet['name'] = twitter_usernames['userid'];
                     tweet['time'] = status.created_at + datetime.timedelta(hours=8);
                     # Original tweet links
                     tweet['link'] = "https://twitter.com/" + userid + "/status/" + str(status.id);
@@ -270,13 +350,6 @@ while True:
                     tweets.append(tweet);
     # Sort tweets by created_at time descending sequence
     tweets.sort(key=lambda tweet: tweet['time'], reverse=True);
-    for tweet in tweets:
-        print(str(tweet['time']));
-        print(str(tweet['link']));
-        print(str(tweet['content']));
-        for imgurl in tweet['imgurls']:
-            print(str(imgurl));
-        print("-----------------------------------------");
     if len(tweets) > 0:
         conn = http.client.HTTPSConnection("www.ptt.cc");
         # conn.request("GET", "/bbs/ONE_PIECE/index.html");
@@ -315,7 +388,7 @@ while True:
         # Close connection
         conn.close();
         # Update tweets to existed post or create a new post
-        # news_update( post_href, tweets);
+        news_update(post_href, tweets);
     # # Rest a moment
     # #--2017.10.05 extends to 15mins a round for Twitter APIs rate limit
     time.sleep(60 * 15);
