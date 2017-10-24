@@ -170,12 +170,37 @@ def news_update( newslink, tweets ):
                                 if "標題" in content_term:
                                     nowdatetime = datetime.datetime.utcnow() + datetime.timedelta(hours=8);
                                     today = datetime.datetime.combine(nowdatetime.date(), datetime.time.min);
-                                    tn.write(("[情報] " + today.strftime('%m/%d') + " 最新情報彙總").encode('uao_decode') + b"\r");
+                                    tn.write(("[情報] " + today.strftime('%m/%d') + " 最新情報匯整").encode('uao_decode') + b"\r");
                                     time.sleep(3);
                                     content_term = tn.read_very_eager().decode('uao_decode');
                     # Edit the post
                     if "編輯文章" in content_term:
-                        pass
+                        # Go to the end of post
+                        tn.write(b"\x13");
+                        time.sleep(3);
+                        content_term = tn.read_very_eager().decode('uao_decode');
+                        # Search for the top-lined keyword
+                        if "[搜尋]" in content_term:
+                            tn.write("依時間順，最新情報顯示於最上方：".encode('uao_decode') + b"\r");
+                            time.sleep(3);
+                            content_term = tn.read_very_eager().decode('uao_decode');
+                            # Caps or not
+                            if "區分大小寫" in content_term:
+                                tn.write("y".encode('uao_decode') + b"\r");
+                                time.sleep(3);
+                                content_term = tn.read_very_eager().decode('uao_decode');
+                        # Clear top-line and create edit area
+                        tn.write(b"\x19");
+                        time.sleep(3);
+                        content_term = tn.read_very_eager().decode('uao_decode');
+                        tn.write("依時間順，最新情報顯示於最上方：".encode('uao_decode') + b"\r");
+                        time.sleep(3);
+                        content_term = tn.read_very_eager().decode('uao_decode');
+                        tn.write(b"\r");
+                        time.sleep(3);
+                        content_term = tn.read_very_eager().decode('uao_decode');
+                        for tweet in tweets:
+                            pass
     # Logout process
     while not "主功能表" in content_term:
         print(">>> 回上一層");
@@ -228,7 +253,7 @@ while True:
                     tweet = {};
                     tweet['time'] = status.created_at + datetime.timedelta(hours=8);
                     # Original tweet links
-                    tweet['link'] = "https://twitter.com/" + userid + "/status/" + status.id;
+                    tweet['link'] = "https://twitter.com/" + userid + "/status/" + str(status.id);
                     tweet['content'] = status.full_text;
                     # Get any images in the tweet
                     tweet['imgurls'] = [];
@@ -243,6 +268,8 @@ while True:
                     if status.id > last_tweetids[userid]:
                         last_tweetids[userid] = status.id;
                     tweets.append(tweet);
+    # Sort tweets by created_at time descending sequence
+    tweets.sort(key=lambda tweet: tweet['time'], reverse=True);
     for tweet in tweets:
         print(str(tweet['time']));
         print(str(tweet['link']));
