@@ -11,7 +11,7 @@ import re
 import http.client
 from bs4 import BeautifulSoup
 import tweepy
-# import unicodedata
+import unicodedata
 # Global setup definition
 bm_list = ['yukinoba', 'frojet'];
 login = {'account': 'opnews', 'password': 'wannpisu'};
