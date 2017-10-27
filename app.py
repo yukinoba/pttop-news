@@ -353,7 +353,7 @@ while True:
         while not endoflist and in_nowday and post_href == "":
             soup_list = BeautifulSoup(content_list, 'html.parser');
             for postentry in soup_list.select('div.r-ent'):
-                postdate = postentry.select('div.date')[0].text;
+                postdate = postentry.select('div.date')[0].text.strip();
                 postauthor = postentry.select('div.author')[0].text;
                 if datetime.datetime.strptime(postdate, "%m/%d").date() == today.date() and postauthor.strip() == login['account']:
                     # Get post link
