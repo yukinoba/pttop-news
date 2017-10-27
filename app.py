@@ -216,7 +216,7 @@ def news_update( newslink, tweets ):
                             print(str(tweet['content']));
                             for imgurl in tweet['imgurls']:
                                 print(str(imgurl));
-                            tn.write(("※ " + tweet['name'] + " " + tweet['time']).encode('uao_decode') + b"\r");
+                            tn.write(("※ " + tweet['name'] + " " + str(tweet['time'])).encode('uao_decode') + b"\r");
                             time.sleep(3);
                             content_term = tn.read_very_eager().decode('uao_decode');
                             tn.write(("原文網址：" + tweet['link']).encode('uao_decode') + b"\r");
