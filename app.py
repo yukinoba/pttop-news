@@ -92,7 +92,7 @@ def news_update( newslink, tweets ):
             # Unfinished post
             if "尚未完成" in content_term:
                 print(">>> 未完發文");
-                tn.write("q".encode('uao_decode'));
+                tn.write("q".encode('uao_decode') + b"\r");
                 time.sleep(3);
                 content_term = tn.read_very_eager().decode('uao_decode');
     # Enter specific board
