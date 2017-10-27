@@ -320,7 +320,7 @@ while True:
                 else:
                     print(">>> 有新情報");
                     tweet = {};
-                    tweet['name'] = twitter_usernames['userid'];
+                    tweet['name'] = twitter_usernames[userid];
                     tweet['time'] = status.created_at + datetime.timedelta(hours=8);
                     # Original tweet links
                     tweet['link'] = "https://twitter.com/" + userid + "/status/" + str(status.id);
