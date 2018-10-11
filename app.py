@@ -14,7 +14,7 @@ import tweepy
 import unicodedata
 # Global setup definition
 bm_list = ['yukinoba', 'frojet'];
-login = {'account': 'opnews', 'password': 'wannpisu'};
+login = {'account': 'SeptemberCat', 'password': 'meow'};
 # Twitter application consumer keys
 # https://apps.twitter.com/
 twitter_consumer_key = 'rn9drYLjeSxrnUjq22J9Bmaq0';
