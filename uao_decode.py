@@ -5,7 +5,7 @@ import struct
 
 
 class Codec(codecs.Codec):
-    def encode(self,input,errors='strict'):
+    def encode(self,input,errors='replace'):
         uaostr = b''
         ptr = 0
         
@@ -20,12 +20,12 @@ class Codec(codecs.Codec):
                 ptr += 1
             except:
                 uni = input[ptr:ptr+1]
-                uaostr += uni.encode('cp950', 'replace')
+                uaostr += uni.encode('big5hkscs', 'replace')
                 ptr += 1
             
         return uaostr, len(uaostr)
 
-    def decode(self,input,errors='strict'):
+    def decode(self,input,errors='replace'):
         unistr = ''
         ptr = 0
         
