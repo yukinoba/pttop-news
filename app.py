@@ -234,29 +234,33 @@ def news_update( newslink, tweets ):
                             tn.write(("原文網址：" + tweet['link']).encode('uao_decode') + b"\r");
                             time.sleep(3);
                             content_term = tn.read_very_eager().decode('uao_decode');
-                            # Ideal width of single post line is 50 half-width chars
-                            line_limit = 50;
-                            counter = 0;
-                            for char in tweet['content']:
-                                tn.write(char.encode('uao_decode'));
-                                time.sleep(3);
-                                content_term = tn.read_very_eager().decode('uao_decode');
-                                charwidth = unicodedata.east_asian_width(char);
-                                if charwidth in ['F', 'W']:
-                                    counter = counter + 2;
-                                elif charwidth in ['A', 'H', 'N', 'Na']:
-                                    counter = counter + 1;
-                                else:
-                                    counter = counter + 1;
-                                if counter > line_limit:
-                                    counter = 0;
-                                    tn.write(b"\r");
-                                    time.sleep(3);
-                                    content_term = tn.read_very_eager().decode('uao_decode');
-                            if counter > 0:
-                                tn.write(b"\r");
-                                time.sleep(3);
-                                content_term = tn.read_very_eager().decode('uao_decode');
+                            # Write whole texts
+                            tn.write(str(tweet['content']).encode('uao_decode'));
+                            time.sleep(3);
+                            content_term = tn.read_very_eager().decode('uao_decode');
+                            # # Ideal width of single post line is 50 half-width chars
+                            # line_limit = 50;
+                            # counter = 0;
+                            # for char in tweet['content']:
+                                # tn.write(char.encode('uao_decode'));
+                                # time.sleep(3);
+                                # content_term = tn.read_very_eager().decode('uao_decode');
+                                # charwidth = unicodedata.east_asian_width(char);
+                                # if charwidth in ['F', 'W']:
+                                    # counter = counter + 2;
+                                # elif charwidth in ['A', 'H', 'N', 'Na']:
+                                    # counter = counter + 1;
+                                # else:
+                                    # counter = counter + 1;
+                                # if counter > line_limit:
+                                    # counter = 0;
+                                    # tn.write(b"\r");
+                                    # time.sleep(3);
+                                    # content_term = tn.read_very_eager().decode('uao_decode');
+                            # if counter > 0:
+                                # tn.write(b"\r");
+                                # time.sleep(3);
+                                # content_term = tn.read_very_eager().decode('uao_decode');
                             # Images in tweet
                             for imgurl in tweet['imgurls']:
                                 tn.write(imgurl.encode('uao_decode') + b"\r");
