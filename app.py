@@ -232,7 +232,8 @@ def news_update( newslink, tweets ):
                             line_limit = 50;
                             counter = 0;
                             for char in tweet['content']:
-                                tn.write(char.encode('uao_decode'));
+                                # tn.write(char.encode('uao_decode'));
+                                tn.write(char);
                                 time.sleep(3);
                                 content_term = tn.read_very_eager().decode('uao_decode');
                                 charwidth = unicodedata.east_asian_width(char);
