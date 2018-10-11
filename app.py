@@ -86,6 +86,7 @@ def news_update( newslink, tweets ):
             # Temporary login waiting
             if "登入中" in content_term:
                 print(">>> 等待登入");
+                tn.write(" ".encode('uao_decode'));
                 time.sleep(3);
                 content_term = tn.read_very_eager().decode('uao_decode');
             # Dashboard
@@ -99,7 +100,7 @@ def news_update( newslink, tweets ):
                 print(">>> 未完發文");
                 tn.write("q".encode('uao_decode') + b"\r");
                 time.sleep(3);
-                content_term = tn.read_very_eager().decode('uao_decode');
+                content_term = tn.read_very_eager().decode('uao_decode');https://api.starter-us-west-1.openshift.com/apis/build.openshift.io/v1/namespaces/pttop-news/buildconfigs/pttop-news/webhooks/323ded5f0551f18b/github
     # Enter specific board
     if "主功能表" in content_term:
         print(">>> 主功能表");
