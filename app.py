@@ -229,7 +229,7 @@ def news_update( newslink, tweets ):
                             time.sleep(3);
                             content_term = tn.read_very_eager().decode('uao_decode');
                             # Write content strings
-                            tn.write(str(tweet['content']));
+                            tn.write(str(tweet['content']).encode('uao_decode') + b"\r");
                             time.sleep(3);
                             content_term = tn.read_very_eager().decode('uao_decode');
                             # # Ideal width of single post line is 50 half-width chars
