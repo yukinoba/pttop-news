@@ -83,6 +83,12 @@ def news_update( newslink, tweets ):
                 tn.write("n".encode('uao_decode') + b"\r");
                 time.sleep(5);
                 content_term = tn.read_very_eager().decode('uao_decode');
+            # Busy login
+            if "請勿頻繁登入" in content_term:
+                print(">>> 頻繁登入");
+                tn.write(" ".encode('uao_decode') + b"\r");
+                time.sleep(5);
+                content_term = tn.read_very_eager().decode('uao_decode');
             # Temporary login waiting
             if "登入中" in content_term:
                 print(">>> 等待登入");
