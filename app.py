@@ -83,6 +83,11 @@ def news_update( newslink, tweets ):
                 tn.write("n".encode('uao_decode') + b"\r");
                 time.sleep(5);
                 content_term = tn.read_very_eager().decode('uao_decode');
+            # Temporary login waiting
+            if "登入中" in content_term:
+                print(">>> 等待登入");
+                time.sleep(3);
+                content_term = tn.read_very_eager().decode('uao_decode');
             # Dashboard
             if "請按任意鍵繼續" in content_term:
                 print(">>> 登入成功");
