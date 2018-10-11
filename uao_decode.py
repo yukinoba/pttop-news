@@ -20,7 +20,7 @@ class Codec(codecs.Codec):
                 ptr += 1
             except:
                 uni = input[ptr:ptr+1]
-                uaostr += uni.encode('cp950')
+                uaostr += uni.encode('cp950', 'replace')
                 ptr += 1
             
         return uaostr, len(uaostr)
